@@ -2,14 +2,14 @@ from datetime import timedelta
 from temporalio import workflow
 
 with workflow.unsafe.imports_passed_through():
-    from activities.activities import greet
+    from src.activities.activities import greet
 
-@workflow.defn
+@workflow.defn(name="HelloWorldWorkflow")
 class SayHelloWorkflow:
     @workflow.run
     async def run(self, name: str) -> str:
         return await workflow.execute_activity(
-            greet,
-            name,
+            activity=greet,
+            args=[name],
             schedule_to_close_timeout=timedelta(seconds=10),
         )

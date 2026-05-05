@@ -4,14 +4,15 @@ from temporalio.worker import Worker
 from temporalio import workflow
 
 with workflow.unsafe.imports_passed_through():
-    from workflows.parent.hello_world import SayHelloWorkflow
-    from activities.activities import greet
+    from src.workflows.parent.hello_world import SayHelloWorkflow
+    from src.activities.activities import greet
+    from src.utils.constants import TASK_QUEUE
 
 async def main():
     client = await Client.connect("localhost:7233")
     worker = Worker(
-        client,
-        task_queue="my-task-queue",
+        client=client,
+        task_queue=TASK_QUEUE,
         workflows=[SayHelloWorkflow],
         activities=[greet],
     )
