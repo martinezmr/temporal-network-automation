@@ -30,8 +30,8 @@ class DnacClient:
         return response.json()["response"]
 
 
-# if __name__ == "__main__":
-#     client = DnacClient()
-#     devices = client.get_network_devices()
-#     from pprint import pprint
-#     pprint(devices)
+if __name__ == "__main__":
+    client = DnacClient()
+    devices = client.get_network_devices()
+    from pprint import pprint
+    pprint(devices)
