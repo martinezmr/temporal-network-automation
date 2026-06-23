@@ -3,12 +3,12 @@ import uuid
 from temporalio.client import Client
 import sys
 
-from src.utils.constants import TASK_QUEUE
+from src.utils.constants import TASK_QUEUE, CLIENT
 
 
 async def main():
     name = sys.argv[1] if len(sys.argv) > 1 else "Temporal"
-    client = await Client.connect("localhost:7233")
+    client = await Client.connect(CLIENT)
     result = await client.start_workflow(
         workflow="HelloWorldWorkflow",
         args=[name],

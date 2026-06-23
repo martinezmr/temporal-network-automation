@@ -7,11 +7,11 @@ with workflow.unsafe.imports_passed_through():
     from src.workflows.parent.hello_world import SayHelloWorkflow
     from src.workflows.child.hello_world_child import ComposeGreetingWorkflow
     from src.activities.activities import greet
-    from src.utils.constants import TASK_QUEUE
+    from src.utils.constants import TASK_QUEUE, CLIENT
 
 
 async def main():
-    client = await Client.connect("localhost:7233")
+    client = await Client.connect(CLIENT)
     worker = Worker(
         client=client,
         task_queue=TASK_QUEUE,

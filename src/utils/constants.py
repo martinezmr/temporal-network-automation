@@ -8,3 +8,4 @@ DNAC_USERNAME = os.getenv("DNAC_USERNAME")
 DNAC_PASSWORD = os.getenv("DNAC_PASSWORD")
 
 TASK_QUEUE = "workflow-task-queue"
+CLIENT = "localhost:7233"
