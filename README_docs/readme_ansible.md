@@ -580,145 +580,63 @@ I have put together a clean, professional deployment guide for setting up an Ans
 
 This environment maps your local host execution files straight into a persistent, detached container so your playbooks run seamlessly through podman exec. You can download the .md file below. 🛠️ 🤖 📦📁 🛡️
 
-can you do one for container lab?
-
-2. Install Containerlab inside the Linux VM
-Once inside the VM prompt, run the official automated script to fetch and install the latest Containerlab binary:
-
-Bash
-curl -sL [https://containerlab.dev/setup](https://containerlab.dev/setup) | sudo bash
-3. Create a Basic Topology File
-Create a workspace directory and define a basic topology (e.g., using standard FRR or native network routing images) inside a file named lab.clab.yml:
-
-Bash
-mkdir -p ~/my-first-lab && cd ~/my-first-lab
-cat <<EOF > lab.clab.yml
-name: mini-lab
-
-topology:
-  nodes:
-    router1:
-      kind: linux
-      image: frrouting/frr:v8.4.0
-    router2:
-      kind: linux
-      image: frrouting/frr:v8.4.0
-
-  links:
-    - endpoints: ["router1:eth1", "router2:eth1"]
-EOF
-4. Deploy the Topology
-Deploy the network topology using root privileges inside the VM. Containerlab will pull the images, construct the virtual interfaces, and configure the interconnects automatically:
-
-Bash
-sudo containerlab deploy --topo lab.clab.yml
-5. Verify and Inspect Running Nodes
-Review the state of your running network nodes and their mapped IP addresses:
-
-Bash
-sudo containerlab inspect --topo lab.clab.yml
-Managing the Lab Topology
-Access a Node Shell: sudo podman exec -it clab-mini-lab-router1 vtysh
-
-Destroy the Lab: sudo containerlab destroy --topo lab.clab.yml
-
-Exit the Podman VM: exit
-"""
-
-with open("containerlab-podman-setup.md", "w") as f:
-f.write(containerlab_content)
-print("Containerlab file written successfully.")
-
-
-```text?code_stdout&code_event_index=1
-Containerlab file written successfully.
-
-Your Markdown file for Containerlab is ready
-MD icon
-containerlab-podman-setup
- MD 
-Open
-
-I have created a clean, production-ready .md file for Containerlab.
-
-Because Containerlab manipulates deep Linux kernel features like network namespaces and veth pairs, running it on macOS requires dropping into the root shell of your initialized applehv Linux virtual machine via podman machine ssh. This document accurately breaks down that architectural requirement and maps out the exact setup steps for your team. You can download the file below. 🛠️ 🌐 🔀📁
-
 
 
 
 Gemini is AI and can make mistakes.
 
-## Deploying Containerlab via Podman
+## Deploying an Ansible Development Environment via Podman
 
-This guide details how to set up Containerlab inside a Podman environment on macOS. Containerlab allows you to spin up containerized network topologies (using Arista cEOS, Nokia SR-OS, Cisco XRD, FRR, etc.) orchestration-style.
+This guide covers setting up a persistent local Ansible development environment container using Podman. It maps a local playbook directory into the container, allowing you to run, test, and write playbooks directly from your local IDE while executing them in a clean runtime environment.
 
-### Prerequisites & Limitations on macOS
+### Prerequisites
 
-Because Containerlab relies heavily on native Linux kernel networking features (such as veth pairs, Linux bridges, and netns manipulation), running it on a macOS host requires specific considerations:
+Ensure your local Podman machine is running. On macOS, if you encounter connection issues, verify your virtualization backend is initialized (`podman machine start`).
 
-1. **VM Root Privileges:** You must execute Containerlab commands inside the Podman Linux VM using root access, as rootless Podman cannot manipulate system network namespaces.
-2. **Apple Hypervisor Setup:** Ensure your Podman machine was initialized using the standard native hypervisor framework (`podman machine init --provider applehv`).
+### Deployment Steps
 
----
-
-### Step-by-Step Deployment
-
-#### 1. SSH into the Podman Linux VM
-Instead of running Containerlab directly from the macOS terminal prompt, you need to execute it within the underlying Linux VM environment where the container engines reside:
+#### 1. Create a Project Directory (Local Host)
+Create a directory on your local machine to store your Ansible configuration, inventories, and playbooks:
 
 ```bash
-podman machine ssh
+mkdir -p ~/ansible-dev/playbooks
+cd ~/ansible-dev
 ```
 
-#### 2. Install Containerlab inside the Linux VM
-Once inside the VM prompt, run the official automated script to fetch and install the latest Containerlab binary:
+#### 2. Launch the Ansible Container
+Run the container in a detached interactive state. This command binds your local `~/ansible-dev` directory to the container's workspace and applies the correct SELinux/container volume flags (`:Z`):
 
 ```bash
-curl -sL https://containerlab.dev/setup | sudo bash
+podman run -d \
+  --name ansible-dev \
+  -v ~/ansible-dev:/workspace:Z \
+  -w /workspace \
+  docker.io/willhallonline/ansible:latest \
+  sleep infinity
 ```
 
-#### 3. Create a Basic Topology File
-Create a workspace directory and define a basic topology (e.g., using standard FRR or native network routing images) inside a file named `lab.clab.yml`:
+### Running Ansible Commands
+
+Because the container runs persistently in the background, you can execute commands inside it directly from your terminal.
+
+#### Verify the Installation
+Check the installed Ansible version and its configuration paths:
 
 ```bash
-mkdir -p ~/my-first-lab && cd ~/my-first-lab
-cat <<EOF > lab.clab.yml
-name: mini-lab
-
-topology:
-  nodes:
-    router1:
-      kind: linux
-      image: frrouting/frr:v8.4.0
-    router2:
-      kind: linux
-      image: frrouting/frr:v8.4.0
-
-  links:
-    - endpoints: ["router1:eth1", "router2:eth1"]
-EOF
+podman exec -it ansible-dev ansible --version
 ```
 
-#### 4. Deploy the Topology
-Deploy the network topology using root privileges inside the VM. Containerlab will pull the images, construct the virtual interfaces, and configure the interconnects automatically:
+#### Run a Playbook
+To run a playbook (`site.yml`) located in your local directory, execute it through the container context:
 
 ```bash
-sudo containerlab deploy --topo lab.clab.yml
+podman exec -it ansible-dev ansible-playbook playbooks/site.yml -i playbooks/inventory.ini
 ```
 
-#### 5. Verify and Inspect Running Nodes
-Review the state of your running network nodes and their mapped IP addresses:
+### Managing the Container
 
-```bash
-sudo containerlab inspect --topo lab.clab.yml
-```
-
----
-
-### Managing the Lab Topology
-
-* **Access a Node Shell:** `sudo podman exec -it clab-mini-lab-router1 vtysh`
-* **Destroy the Lab:** `sudo containerlab destroy --topo lab.clab.yml`
-* **Exit the Podman VM:** `exit`
-containerlab-podman-setup.md
-Displaying containerlab-podman-setup.md.
+* **Stop the container:** `podman stop ansible-dev`
+* **Start the container:** `podman start ansible-dev`
+* **Access the container shell:** `podman exec -it ansible-dev /bin/sh`
+ansible-podman-setup.md
+Displaying ansible-podman-setup.md.
