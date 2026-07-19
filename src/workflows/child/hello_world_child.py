@@ -1,5 +1,5 @@
 from temporalio import workflow
-from src.models.models import ComposeGreetingInput
+from src.utils.models.models import ComposeGreetingInput
 
 
 @workflow.defn

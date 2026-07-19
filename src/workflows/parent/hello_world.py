@@ -3,7 +3,7 @@ from temporalio import workflow
 
 with workflow.unsafe.imports_passed_through():
     from src.activities.activities import greet
-    from src.models.models import ComposeGreetingInput
+    from src.utils.models.models import ComposeGreetingInput
     from src.workflows.child.hello_world_child import ComposeGreetingWorkflow
     from src.utils.constants import TASK_QUEUE
 
