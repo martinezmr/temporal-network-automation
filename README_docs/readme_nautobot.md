@@ -26,14 +26,27 @@ podman run -d --pod nautobot-pod --name nautobot-redis   -v nautobot-redis-data:
 Inject the database container into the same Pod with local data persistence:
 
 ```bash
-podman run -d --pod nautobot-pod --name nautobot-db   -e POSTGRES_DB=nautobot   -e POSTGRES_USER=nautobot   -e POSTGRES_PASSWORD=nautobotpass   -v nautobot-db-data:/var/lib/postgresql/data:Z   docker.io/library/postgres:13-alpine
+podman run -d --pod nautobot-pod --name nautobot-db \
+  -e POSTGRES_DB=nautobot \
+  -e POSTGRES_USER=nautobot \
+  -e POSTGRES_PASSWORD=nautobotpass \
+  -v nautobot-db-data:/var/lib/postgresql/data:Z \
+  docker.io/library/postgres:14-alpine
 ```
 
 #### 4. Start Nautobot
 Launch the Nautobot application container inside the Pod. Point the database and Redis configuration variables directly to localhost (`127.0.0.1`):
 
 ```bash
-podman run -d --pod nautobot-pod --name nautobot-web   -e NAUTOBOT_DB_HOST=127.0.0.1   -e NAUTOBOT_DB_NAME=nautobot   -e NAUTOBOT_DB_USER=nautobot   -e NAUTOBOT_DB_PASSWORD=nautobotpass   -e NAUTOBOT_REDIS_HOST=127.0.0.1   -e NAUTOBOT_REDIS_PORT=6379   -e NAUTOBOT_SECRET_KEY=supersecretdevelopmentkeydontuseinprod12345   -e NAUTOBOT_ALLOWED_HOSTS=*   docker.io/networktocode/nautobot:stable-py3.13
+podman run -d --pod nautobot-pod --name nautobot-web \
+-e NAUTOBOT_DB_HOST=127.0.0.1   \
+-e NAUTOBOT_DB_NAME=nautobot   \
+-e NAUTOBOT_DB_USER=nautobot   \
+-e NAUTOBOT_DB_PASSWORD=nautobot   \
+-e NAUTOBOT_REDIS_HOST=127.0.0.1   \
+-e NAUTOBOT_REDIS_PORT=6379   \
+-e NAUTOBOT_SECRET_KEY=nautobot   \
+docker.io/networktocode/nautobot:stable-py3.13
 ```
 
 ### Verifying the Launch
