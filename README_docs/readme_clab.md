@@ -94,8 +94,9 @@ You need to upload the cEOS image file named cEOS64-lab-4.32.0F.tar.xz to your U
 1. Download the image from the Arista software download portal:
    https://www.arista.com/en/support/software-download
 2. Create a lab directory on the Ubuntu VM.
-3. Copy the repository's clab folder to the VM if you have not already done so.
-4. Copy the image file from your Mac to the Ubuntu VM.
+3. Navigate to this repo to get your container lab repo: https://github.com/nautobot/100-days-of-nautobot/tree/main/clab
+4. Copy the repository's clab folder to the VM if you have not already done so.
+5. Copy the image file from your Mac to the Ubuntu VM.
 
 Example import command:
 
