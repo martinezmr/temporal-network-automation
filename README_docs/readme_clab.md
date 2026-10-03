@@ -1,4 +1,4 @@
-## Deploying ContainerLab via Podman on macOS
+## Deploying ContainerLab via OrbStack on macOS
 
 This guide provides step-by-step instructions for setting up ContainerLab in a Podman-based environment on macOS. ContainerLab lets you deploy and manage containerized network topologies such as Arista cEOS, Nokia SR-OS, Cisco XRD, and FRR.
 
